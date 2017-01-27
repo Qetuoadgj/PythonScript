@@ -176,6 +176,7 @@ if expression != None:
   count = 0
   num = 0
   list = 1
+  results = 0
 
   # delay = 1
   # time.sleep(delay) # Delay for 'delay' seconds
@@ -204,8 +205,9 @@ if expression != None:
     if isLanet:
       for c_num, c_name in channels.items():
         if int(c_num) == int(c_count):
+          results = results + 1
           SYNTAX = '#EXTINF: -1 group-title="LANET",'+c_name
-          RESULT = (SYNTAX + '\r\n' + PATTERN) % (int(x))
+          RESULT = ('## %s\r\n' + SYNTAX + '\r\n' + PATTERN) % (int(results), int(x))
           break
         else:
           if (SKIP_UNKNOWN == 1):
@@ -252,3 +254,5 @@ if expression != None:
   editor.endUndoAction()
   # Turn the undo recorder back on.
   editor.setUndoCollection(1)
+
+  console.write('\r\nFinished !\r\n')
