@@ -24,7 +24,7 @@ def trim(string):
 SYNTAX    = '#EXTINF: -1 group-title="LANET",___%04d___'
 PATTERN   = 'http://play.lanet.tv/live/%04d.m3u8'
 COUNT_MIN = 1000
-COUNT_MAX = COUNT_MIN + 30
+COUNT_MAX = COUNT_MIN + 9000
 SPLIT_AT  = 5000
 SKIP_UNKNOWN = 1
 
@@ -35,20 +35,20 @@ SKIP_UNKNOWN = 1
 # \1
 
 lanet = {
-  9002:'1+1',
+  # 9002:'1+1',
   9053:'112',
-  9010:'ТЕТ',
+  # 9010:'ТЕТ',
   9014:'5 канал',
-  9016:'2+2',
-  9017:'ПлюсПлюс',
+  # 9016:'2+2',
+  # 9017:'ПлюсПлюс',
   9018:'Рада',
   9035:'Телеканал новостей 24',
-  9047:'Бигуди',
-  9050:'ZIK',
+  # 9047:'Бигуди',
+  # 9050:'ZIK',
   9060:'Еспресо TV',
   1001:'Громадське-TB',
   9086:'3S',
-  1002:'Еспресо HD',
+  # 1002:'Еспресо HD',
 
   # Lanet 2017
   1008:'Skrypin UA',
@@ -56,9 +56,9 @@ lanet = {
   2003:'Lanet Streams HD',
   2006:'Lanet Fight HD',
   9086:'3S',
-  9921:'UA: Перший',
-  9923:'Рада',
-  9922:'UA | TV',
+  # 9921:'UA: Перший',
+  # 9923:'Рада',
+  # 9922:'UA | TV',
 
   #VLAD - 2017.01.26
   1001:'Hromadske',
@@ -206,7 +206,8 @@ if expression != None:
       for c_num, c_name in channels.items():
         if int(c_num) == int(c_count):
           results = results + 1
-          SYNTAX = '#EXTINF: -1 group-title="LANET",'+c_name
+          # SYNTAX = '#EXTINF: -1 group-title="LANET",'+c_name
+          SYNTAX = re.sub(r',___(.*?)___$', ',', SYNTAX_OLD) + c_name
           RESULT = ('## %s\r\n' + SYNTAX + '\r\n' + PATTERN) % (int(results), int(x))
           break
         else:
