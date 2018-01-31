@@ -22,7 +22,7 @@ def FixCaseFunc():
 	for Command in CaseTable:
 		# Case = re.search(r"#\b" + re.sub("^#", "", Command) + r"\b", CommandsList, re.IGNORECASE)
 		Case = re.search(r"[^\w]+\b" + re.sub("^([^\w]+)", "", Command) + r"\b", CommandsList, re.IGNORECASE)
-		if (Case):
+		if (Case is not None):
 			editor.rereplace(Command + r"\b", Command, re.IGNORECASE)
 		else:
 			editor.rereplace(r"\b" + Command + r"\b", Command, re.IGNORECASE)
@@ -31,33 +31,43 @@ def FixCaseFunc():
 def FixCommasFunc(LineText, LineNumber, TotalLines):
 	# console.write(str(LineNumber+1) + ". " + LineText + "\n")
 	LineTextOld = LineText
-	Match = re.search(r"^([;~]?(?:[\t ]+)?)(#?\b\w+\b)([\t ]{1,})([^\s])", LineText)
+	Match = re.search(r"^([;~]?(?:[\t ]+)?)" + r"(#?\b\w+\b)" + r"([\t ]{1,})" + r"([^\s])", LineText)
 	# editor.gotoLine(LineNumber)
 	# editor.scrollCaret()
-	if Match:
+	if (Match is not None):
 		LeadingSpaces = Match.group(1)
 		Command = Match.group(2)
 		TrailingSpaces = Match.group(3)
 		ParamsOrSomething = Match.group(4)
-		Match = False
-		# Case = re.search(r"#\b" + re.sub("^#", "", Command) + r"\b", CommandsList, re.IGNORECASE)
-		Case = re.search(r"[^\w]+\b" + re.sub("^([^\w]+)", "", Command) + r"\b", CommandsList, re.IGNORECASE)
-		if (Case):
-			Match = re.search(Command + r"\b", CommandsList, re.IGNORECASE)
-		else:
-			Match = re.search(r"\b" + Command + r"\b", CommandsList, re.IGNORECASE)
-		if Match:
-			Match = re.search(r"^([;~]?(?:[\t ]+)?)" + Command + r"\b" + r"([\t ]{1,})([^\s]+)", LineText, re.IGNORECASE)
-			if Match:
-				MathSymbolsRegEx = r"\+\+|\-\-|\-\=|\+\=|\*\=|\/\=|\:\=|\.="
-				Match = re.search(MathSymbolsRegEx, Match.group(3), re.IGNORECASE)
-				if (not Match):
-					LineText = re.sub(r"^([;~]?(?:[\t ]+)?)" + r"" + Command + r"\b" + r"([\t ]{1,})([^\s])", r"\1" + Command + r",\2\3", LineText, 0, re.IGNORECASE)
-					# console.write(LineText)
-					LineText = re.sub(Command + r"\b" + r",([\t ]+;)", Command + r"\1", LineText, 0, re.IGNORECASE)
-					# editor.replaceWholeLine(LineNumber, LineText)
+		Skip = re.search(r"^[,]", ParamsOrSomething, re.IGNORECASE)
+		if (Skip is None):
+			Match = False
+			# Case = re.search(r"#\b" + re.sub("^#", "", Command) + r"\b", CommandsList, re.IGNORECASE)
+			Case = re.search(r"[^\w]+\b" + re.sub("^([^\w]+)", "", Command) + r"\b", CommandsList, re.IGNORECASE)
+			if (Case is not None):
+				Match = re.search(Command + r"\b", CommandsList, re.IGNORECASE)
+			else:
+				Match = re.search(r"\b" + Command + r"\b", CommandsList, re.IGNORECASE)
+			if (Match is not None):
+				Match = re.search(r"^([;~]?(?:[\t ]+)?)" + Command + r"\b" + r"([\t ]{1,})" + r"([^\s]+)", LineText, re.IGNORECASE)
+				if (Match is not None):
+					MathSymbolsRegEx = r"\+\+|\-\-|\-\=|\+\=|\*\=|\/\=|\:\=|\.="
+					Match = re.search(MathSymbolsRegEx, Match.group(3), re.IGNORECASE)
+					if (Match is None):
+						LineText = re.sub(r"^([;~]?(?:[\t ]+)?)" + Command + r"\b" + r"([\t ]{1,})" + r"([^\s])", r"\1" + Command + r",\2\3", LineText, 0, re.IGNORECASE)
+						# console.write(LineText)
+						LineText = re.sub(Command + r"\b" + r",([\t ]+;)", Command + r"\1", LineText, 0, re.IGNORECASE)
+						# editor.replaceWholeLine(LineNumber, LineText)
+	Match = re.search(r"^([;~]?(?:[\t ]+)?)" + r"(#?\b\w+\b)" + r"(?:[\t ]+)?,(?:[\t ]+)?" + r"([^\s])", LineText)
+	if (Match is not None):
+		Command = Match.group(2)
+		Match = re.search(r"^([;~]?(?:[\t ]+)?)" + Command + r"\b" + r"(?:[\t ]+)?,(?:[\t ]+)?" + r"([^\s])", LineText, re.IGNORECASE)
+		if (Match is not None):
+			# console.write(LineText)
+			LineText = re.sub(r"^([;~]?(?:[\t ]+)?)" + Command + r"\b" + r"(?:[\t ]+)?,(?:[\t ]+)?" + r"([^\s])", r"\1" + Command + r", \2", LineText, 0, re.IGNORECASE)
+			# editor.replaceWholeLine(LineNumber, LineText)
 	Match = re.search(r",[ \t]+,", LineText, re.IGNORECASE)
-	if Match:
+	if (Match is not None):
 		for x in range(0, 2):
 			LineText = re.sub(r",[ \t]+,", ",,", LineText, 0, re.IGNORECASE)
 		# editor.replaceWholeLine(LineNumber, LineText)
